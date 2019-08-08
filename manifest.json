@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+    "name": "HN Hide",
+    "version": "0.1",
+
+    "description": "",
+
+    "content_scripts": [
+      {
+        "matches": ["*://*.news.ycombinator.com/*"],
+        "js": ["main.js"]
+      }
+    ],
+
+    "permissions": [
+        "http://localhost:3000/"
+    ]
+}
