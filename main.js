@@ -20,15 +20,37 @@ const nextElems = (elem, count) => {
     return ret
 }
 
-const shouldFilter = (athing) => {
-    return fetch("http://localhost:3000/?abc=the%20quick%20brown%20fox")
-          .then(data => data.json())
-    // ret.then(data => {
-    //     console.log(data)
-    //     console.log(data.json().filter)
-    //     data.json().filter})
+/**
+ * path - a domain i.e. google.com
+ * params - an array of ids to include in the uri
+ */
+const buildUri = (path, ids) => {
+    if(path[path.length - 1] != '/') {
+        path += '/'
+    }
 
-    return ret
+    if(ids.length === 0) {
+        return path
+    }
+
+    let query = [`?id=${ids[0]}`]
+    for(const id of ids.slice(1)) {
+        query.push(`&id=${id}`)
+    }
+
+    return path + query.join("")
+}
+
+/**
+ * take in a list of ids and return a list of bools, where `true` means the post should be filtered
+ */
+const shouldFilter = (idList) => {
+    let uri = buildUri("http://localhost:8000/", idList)
+    return fetch(uri)
+        .then(data => {
+            return data.text()
+        })
+        .catch(error => console.log(`Promise returned error ${error}`))
 }
 
 /** Remove a post 
@@ -40,33 +62,37 @@ const remove = (athing) => {
     }
 }
 
-function* reverseCollection(collection) {
+function* reverse(collection) {
     for(let i = collection.length-1; i >= 0; --i ) {
         yield collection[i]
     }
 }
 
-const things = document.getElementsByClassName("athing")
+function* zip(...iters) {
+    while(true) {
+        let ret = []
+        for(const iter of iters) {
+            let val = iter.next()
+            if(val.done) {
+                return
+            }
 
-for(const thing of reverseCollection(things)) {
-    const title = getTitle(thing)
-    shouldFilter(thing)
-        .then(should => {
-            console.log(should.filter)
-            if(should.filter)
-                remove(thing)
-        })
-//     if(shouldFilter(thing)) {
-//         remove(thing)
-//     }
-// }
+            ret.push(val.value)
+        }
+        yield ret
+    }
 }
 
+const things = Array.from(document.getElementsByClassName("athing")).reverse()
+const ids = things.map(thing => thing.id)
 
-fetch("http://localhost:3000/?abc=the%20quick%20brown%20fox")
-   .then(data => data.json())
-   .then(json => {console.log(json)})
-
-// a = fetch("http://localhost:3000/?abc=the%20quick%20brown%20fox")
-//     .then(data => data.json())
-//     .then(json => {console.log(json.filter)})
+shouldFilter(ids)
+    .then(preds => {
+        let predList = JSON.parse(preds)
+        console.log(predList.length)
+        for(const [thing, pred] of zip(things.values(), predList.values())) {
+            if(pred) {
+                remove(thing)
+            }
+        }
+    })
