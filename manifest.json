@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-    "name": "HN Hide",
+    "name": "Hide HN",
     "version": "0.1",
 
-    "description": "",
+    "description": "Hide negative posts from Hacker News",
 
     "content_scripts": [
       {
