@@ -1,4 +1,7 @@
 "use strict"
+console.log("Loaded HideHN")
+
+const root = "https://4hou.se/"
 
 const getTitle = (athing) => {
     return athing.querySelector(".title>a").innerHTML
@@ -45,7 +48,7 @@ const buildUri = (path, ids) => {
  * take in a list of ids and return a list of bools, where `true` means the post should be filtered
  */
 const shouldFilter = (idList) => {
-    let uri = buildUri("http://localhost:8000/", idList)
+    let uri = buildUri(root, idList)
     return fetch(uri)
         .then(data => {
             return data.text()
@@ -53,7 +56,7 @@ const shouldFilter = (idList) => {
         .catch(error => console.log(`Promise returned error ${error}`))
 }
 
-/** Remove a post 
+/** Remove a post
  * @param  {Node} athing an .athing class element
  */
 const remove = (athing) => {
@@ -83,16 +86,18 @@ function* zip(...iters) {
     }
 }
 
-const things = Array.from(document.getElementsByClassName("athing")).reverse()
+const things = Array.from(reverse(document.getElementsByClassName("athing")))
 const ids = things.map(thing => thing.id)
 
 shouldFilter(ids)
     .then(preds => {
         let predList = JSON.parse(preds)
-        console.log(predList.length)
+        let numFiltered = 0
         for(const [thing, pred] of zip(things.values(), predList.values())) {
             if(pred) {
+                numFiltered ++
                 remove(thing)
             }
         }
+        console.log(`Filtered ${numFiltered} posts`)
     })
