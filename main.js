@@ -1,7 +1,7 @@
 "use strict"
 console.log("Loaded HideHN")
 
-const root = "https://4hou.se/"
+const root = "https://eutpj14kkj.execute-api.us-west-2.amazonaws.com/prod/"
 
 const getTitle = (athing) => {
     return athing.querySelector(".title>a").innerHTML

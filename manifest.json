@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
     "name": "Hide HN",
-    "version": "0.1",
+    "version": "0.2",
 
     "description": "Hide negative posts from Hacker News",
 
@@ -14,6 +14,6 @@
     ],
 
     "permissions": [
-        "https://4hou.se"
+        "https://eutpj14kkj.execute-api.us-west-2.amazonaws.com/prod"
     ]
 }
